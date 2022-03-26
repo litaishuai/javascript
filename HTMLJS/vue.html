@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./html.css">
+  <script src="https://unpkg.com/vue@next"></script>
+  <script src="https://unpkg.com/vuex@4"></script>
+  <script src="https://unpkg.com/vue-router@4"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    Counter: {{this.$store.state.count}}
+    <my-button type="button" @click="handleClick">Click me</my-button>
+    <p v-if="seen" class="tips">Hello World</p>
+    <p>{{ fullName }}</p>
+    <my-button>Click me</my-button><br>
+    <show-count></show-count>
+    <p v-for="todo of this.$store.state.todos" :key="todo.id">{{`id: ${todo.id} content: ${todo.content} done:
+      ${todo.done}`}}</p>
+    <form @submit="handleSubmit">
+      <input type="text" placeholder="改变任务的内容" name="content">
+      <button type="submit">Click me</button>
+    </form><br>
+    <my-input v-model="comCounter"></my-input>
+    <p>App data counter: {{this.counter}} </p>
+    <nav>
+      <router-link to="/">Go to Home</router-link><br>
+      <router-link to="/about">Go to About</router-link><br>
+      <router-link to="/users/lishuai">Go to Lishuai`s Home Page</router-link><br>
+      <router-link to="/*">404</router-link>
+    </nav>
+    <router-view></router-view>
+    <div>
+      <input type="radio" name="radio">
+      <input type="radio" name="radio">
+      <input type="radio" name="radio">
+    </div>
+  </div>
+  <script>
+    const Counter = {
+      data() {
+        return {
+          counter: 0,
+          seen: false,
+          firstName: 'firstName',
+          lastName: 'lastName',
+          imgSrc: './photo.jpg',
+        }
+      },
+      computed: {
+        fullName: {
+          get() {
+            return this.firstName + ' ' + this.lastName
+          },
+          set(newValue) {
+            const names = newValue.split(' ');
+            this.firstName = names[0];
+            this.lastName = names[names.length() - 1];
+          }
+        },
+        imageSrc: {
+          get() {
+            return './photo.jpg';
+          }
+        },
+        comCounter: {
+          get() {
+            return this.counter;
+          },
+          set(val) {
+            this.counter = val;
+          }
+        }
+      },
+      watch: {
+        counter(newCounter, oldCounter) {
+          this.seen = true;
+          setInterval(() => this.seen = false, 3000);
+          console.log("Hello World");
+        }
+      },
+      methods: {
+        handleClick() {
+          this.$store.commit({
+            type: 'increment',
+            amount: 10,
+          });
+        },
+        handleSubmit(e) {
+          e.preventDefault();
+          const data = new FormData(e.target);
+          this.$store.commit({
+            type: 'changeTodoContent',
+            content: data.get('content')
+          })
+        },
+        handleFocusIn(e) {
+
+        },
+        fun1() {
+          console.log("This is fun1");
+        },
+        fun2() {
+          console.log("22222222222222222");
+        }
+      }
+    };
+    const app = Vue.createApp(Counter);
+    app.directive('focus', {
+      mounted(e1) {
+        e1.focus();
+      }
+    });
+    app.directive('pin', {
+      mounted(el, binding) {
+        el.style.position = 'fixed';
+        const s = binding.arg || 'top';
+        el.style[s] = binding.value + 'px';
+      }
+    });
+    app.component('my-button', {
+      data() {
+        return {
+          styleObject: {
+            outline: 'none',
+            border: 'none',
+            'min-width': '50px',
+            'min-height': '30px',
+            'fontSize': '1rem',
+            'background-color': 'blue',
+            'color': 'white',
+            'padding': '10px 15px',
+            'cursor': 'pointer',
+            'border-radius': '15px'
+          }
+        }
+      },
+      template: `<button type="button" :style="styleObject" @click="handleClick"><slot></slot></button>`,
+      methods: {
+        handleClick() {
+          this.$store.commit('increment');
+        }
+      }
+    });
+    app.component('my-input', {
+      template: `<input type="number" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">`,
+      props: ['modelValue'],
+      emits: ['update:modelValue'],
+    });
+    app.component('my-component', {
+      props: {
+        modelValue: String,
+        modelModifiers: {
+          default: () => ({})
+        }
+      },
+      emits: ['update:modelValue'],
+      template: `
+      <input type="text"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)">
+      `,
+      created() {
+        console.log(this.modelModifiers);
+      }
+    })
+    app.config.compilerOptions.isCustomElement = (tag) => {
+      tag.startsWith('my');
+    }
+    const store = Vuex.createStore({
+      state() {
+        return {
+          count: 0,
+          todos: [
+            { id: 1, content: 'This is task 1', done: false },
+            { id: 2, content: 'This is task 2', done: false },
+            { id: 3, content: 'This is task 3', done: true },
+          ]
+        }
+      },
+      getters: {
+        doneTodos: (state, getters) => {
+          return state.todos.filter(todo => todo.done) + ' ' + getters.getCount;
+        },
+        getCount: (state) => {
+          return state.count;
+        },
+        getContent: (state) => (id) => {
+          return state.todos.find(todo => todo.id === id).content;
+        },
+      },
+      mutations: {
+        increment(state, payload) {
+          state.count += payload.amount;
+        },
+        changeTodoContent(state, payload) {
+          state.todos.forEach(element => {
+            element.content = payload.content;
+          });
+        }
+      },
+      actions: {
+      }
+    });
+    app.use(store);
+    app.component('show-count', {
+      template: `<h1>Vuex counter: {{ this.$store.state.count }}<slot></slot></h1>`,
+    });
+    const Home = { template: `<div>Home</div>` }
+    const About = { template: `<div>About</div>` }
+    const JJ = { template: `<my-button>User Name: {{$route.params.userName}} </my-button>` }
+    const NotFound = { template: `<p>不好意思, 你来到了错误的地址</p>` }
+    const routes = [
+      { path: '/', component: Home },
+      { path: '/about', component: About },
+      { path: '/users/:userName', component: JJ },
+      { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound }
+    ];
+    const router = VueRouter.createRouter({
+      history: VueRouter.createWebHashHistory(),
+      routes
+    });
+    app.use(router);
+    app.mount('#root');
+  </script>
+  <script>
+    class PopUpInfo extends HTMLElement {
+      constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: 'open' });
+        const wrapper = document.createElement('span');
+        wrapper.setAttribute('class', 'wrapper');
+        const icon = document.createElement('span');
+        icon.setAttribute('class', 'icon');
+        icon.setAttribute('tabindex', 0);
+        const info = document.createElement('span');
+        info.setAttribute('class', 'info');
+
+        const text = this.getAttribute('text');
+        info.textContent = text;
+
+        let imgUrl;
+        if (this.hasAttribute('img')) {
+          imgUrl = this.getAttribute('img');
+        } else {
+          imgUrl = 'img/default.png';
+        }
+
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        icon.appendChild(img);
+        const style = document.createElement('style');
+        // style.textContent = '.wrapper{'
+        shadow.appendChild(style);
+        shadow.appendChild(wrapper);
+        wrapper.appendChild(icon);
+        wrapper.appendChild(info);
+      }
+    }
+    customElements.define('popup-info', PopUpInfo);
+  </script>
+</body>
+
+</html>

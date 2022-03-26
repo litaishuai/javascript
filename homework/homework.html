@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./homework.css">
+  <script src="https://s1.qhres2.com/!bd39e7fb/animator-0.2.0.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <my-form></my-form>
+  </div>
+  <template id="my-form-template">
+    <form id="form" method="post" action="http://localhost:8000/file" enctype="multipart/form-data">
+      <h1>个人信息提交</h1>
+      <label>
+        姓名
+        <input type="text" name="name" required>
+      </label>
+      <label>
+        学号
+        <input type="text" name="studentID" required>
+      </label>
+      <label class="inputAvatar">
+        头像
+        <input type="file" accept="image/*" name="avatar" class="inputFile" required>
+      </label>
+      <button type="submit">
+        Submit
+      </button>
+    </form>
+  </template>
+  <script>
+    function once(fn) {
+      return function (...args) {
+        const ret = fn.apply(this, args);
+        fn = null;
+        return ret;
+      }
+    }
+    class Form extends HTMLElement {
+      constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: "open" });
+        const myFormTemplate = document.getElementById('my-form-template');
+        shadow.appendChild(myFormTemplate.content.cloneNode(true));
+        const style = document.createElement('style');
+        style.textContent = `
+        h1 {
+          text-align: center;
+        }
+        label {
+          display: block;
+          margin: 0 auto;
+          width: 30vw;
+        }
+        input[type=text] {
+          outline: none;
+          border: solid 1px black;
+          padding: 3px;
+          border-radius: 5px;
+          min-height: 1rem;
+          font-size: 1rem;
+        }
+        input[type=text]:focus {
+          border: solid 1px blue;
+        }
+        button {
+          outline: none;
+          min-width: 30px;
+          min-height: 25px;
+          border: none;
+          background-color: rgb(129, 129, 248);
+          border-radius: 10px;
+          padding: 10px;
+          font-size: 1rem;
+          line-height: 1rem;
+          white-space: nowrap;
+          cursor: pointer;
+          color: white;
+          text-align: center;
+          margin: 0 auto;
+        }
+        button>* {
+          cursor: pointer;
+        }
+        `;
+        shadow.appendChild(style);
+      }
+    }
+    customElements.define('my-form', Form);
+  </script>
+</body>
+
+</html>

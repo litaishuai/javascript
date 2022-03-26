@@ -1,0 +1,16 @@
+html,
+body {
+  margin: 0;
+}
+.container {
+  display: flex;
+}
+.left {
+
+}
+.right {
+  
+}
+p {
+  width: 100%;
+}

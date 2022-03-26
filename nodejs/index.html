@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <form method="post" enctype="multipart/form-data" action="/file_upload" id="upload">
+    <h1>提交头像</h1>
+    <label>
+      姓名:
+      <input type="text" name="name" required>
+    </label>
+    <label>
+      学号:
+      <input type="text" name="ID" required>
+    </label>
+    <label>
+      头像
+      <input type="file" accept="image/*" name="avatar" required>
+    </label>
+    <button>Submit</button>
+  </form><br><br>
+</body>
+
+</html>

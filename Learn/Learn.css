@@ -1,0 +1,33 @@
+button {
+  min-width: 30px;
+  min-height: 25px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  padding: 10px;
+  color: white;
+  background-color: blue;
+  cursor: pointer;
+}
+button > * {
+  cursor: pointer;
+}
+#toggle {
+  display: none;
+}
+#toggle:checked + .main {
+  background-color: black;
+  color: white;
+}
+#label::after {
+  content: "light";
+}
+#toggle:checked + .main #label::after {
+  content: "dark";
+}
+.main {
+  -webkit-transition: background-color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out;
+}
